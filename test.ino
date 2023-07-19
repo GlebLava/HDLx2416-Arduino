@@ -27,7 +27,6 @@ void loop() {
   led.show();
   delay(time_interval);
 
-/
   led.set_intensity(60);
   delay(time_interval);
   led.set_intensity(40);
