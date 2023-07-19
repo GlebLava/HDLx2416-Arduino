@@ -84,7 +84,7 @@ void HDLx2416::choose_segment(uint8_t segment) {
   // we dont want to overwrite any other segments with our data that is currently lying on the pins
   // so we need to set write to high (write being low means writing is enabled), while changing the segment
   digitalWrite(m_WR_, HIGH);
-  delay(1); //delay of 40 ns is required, so we wait for 1ms
+  delay(1);  //delay of 40 ns is required, so we wait for 1ms
 
   switch (segment) {
     case 0:
@@ -132,4 +132,71 @@ void HDLx2416::write(uint8_t segment, uint8_t row, uint8_t column) {
     bool bit = (row >> i) & 1;
     digitalWrite(m_DATA[4 + i], bit);
   }
+}
+
+
+void HDLx2416::enter_function_mode() {
+  digitalWrite(m_CLR_, HIGH);
+  digitalWrite(m_CE1_, LOW);
+  digitalWrite(m_CE2_, LOW);
+  digitalWrite(m_WR_, LOW);
+}
+
+void HDLx2416::set_intensity(int percent) {
+
+  enter_function_mode();
+  digitalWrite(m_CU_, LOW);
+  digitalWrite(m_ADR[0], LOW);
+  digitalWrite(m_ADR[1], LOW);
+  digitalWrite(m_WR_, LOW);
+  digitalWrite(m_DATA[6], LOW);
+
+  // only a percentage mapped within 3 bits is allowed
+  // while 111 represents 3% and 000 represents 100%
+  // the intensity control values are not linear,
+  // because of that a if cascade is the solution
+
+  uint8_t intensity_value = 0;
+
+  if (percent > 60) {
+    intensity_value = 0;
+  } else if (percent > 40) {
+    intensity_value = 1;
+  } else if (percent > 27) {
+    intensity_value = 2;
+  } else if (percent > 17) {
+    intensity_value = 3;
+  } else if (percent > 10) {
+    intensity_value = 4;
+  } else if (percent > 7) {
+    intensity_value = 5;
+  } else if (percent > 3) {
+    intensity_value = 6;
+  } else {
+    intensity_value = 7;
+  }
+
+  uint8_t d5_d3[] = { m_DATA[3], m_DATA[4], m_DATA[5] };
+
+  for (int i = 0; i < 3; i++) {
+    bool bit = (intensity_value >> i) & 1;
+    digitalWrite(d5_d3[i], bit);
+  }
+
+  delay(1);
+  enter_no_change_mode();
+}
+
+void HDLx2416::turn_display_off() {
+  enter_function_mode();
+  digitalWrite(m_DATA[6], LOW);
+  digitalWrite(m_DATA[2], HIGH);
+  enter_no_change_mode();
+}
+
+void HDLx2416::turn_display_on() {
+  enter_function_mode();
+  digitalWrite(m_DATA[6], LOW);
+  digitalWrite(m_DATA[2], LOW);
+  enter_no_change_mode();
 }

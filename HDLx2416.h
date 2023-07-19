@@ -42,8 +42,14 @@ public:
   void write(uint8_t segment, uint8_t data);
   void write(uint8_t segment, uint8_t row, uint8_t column);
 
+  void set_intensity(int percent);
+  void turn_display_off();
+  void turn_display_on();
+
+
 private:
   void choose_segment(uint8_t segment);
+  void enter_function_mode();
 };
 
 

@@ -3,15 +3,16 @@
 HDLx2416 led;
 void setup() {
 
+  Serial.begin(9000);
+
   uint8_t add[] = { A0, A1 };
-  uint8_t data_pins[] = { 0, 1, 2, 3, 4, 5, 6};
+  uint8_t data_pins[] = { 3, 4, 5, 6, 7, 8, 9 };
 
   led.set_pins(A4, A3, A5, 12, 13, A2, add, 11, data_pins);
 }
 
-
+int time_interval = 500;
 void loop() {
-  // put your main code here, to run repeatedly:
   led.clear_display();
 
   led.start_write();
@@ -24,6 +25,29 @@ void loop() {
 
   led.end_write();
   led.show();
+  delay(time_interval);
 
-  delay(5000);
+/
+  led.set_intensity(60);
+  delay(time_interval);
+  led.set_intensity(40);
+  delay(time_interval);
+  led.set_intensity(27);
+  delay(time_interval);
+  led.set_intensity(17);
+  delay(time_interval);
+  led.set_intensity(10);
+  delay(time_interval);
+  led.set_intensity(7);
+  delay(time_interval);
+  led.set_intensity(3);
+
+  delay(time_interval);
+  led.turn_display_off();
+
+  delay(time_interval);
+  led.set_intensity(100);
+  led.turn_display_on();
+
+  delay(time_interval);
 }
